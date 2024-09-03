@@ -1,6 +1,8 @@
 ﻿// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.22.0
 
 using AdaptiveCards;
+using KcbBot.EchoBot.Common;
+using KcbBot.EchoBot.Helper;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
@@ -23,15 +25,15 @@ namespace KcbBot.EchoBot.Bots
             // Determine which card to send based on user message
             if (userMessage.Contains("hi") || userMessage.Contains("hello"))
             {
-                cardJson = ReadCardJson("greetingCard.json");
+                cardJson = JsonHelper.ReadCardJson("greetingCard.json");
             }
             else if (userMessage.Contains("bye") || userMessage.Contains("all the best"))
             {
-                cardJson = ReadCardJson("farewellCard.json");
+                cardJson = JsonHelper.ReadCardJson("farewellCard.json");
             }
             else
             {
-                cardJson = ReadCardJson("chatCard.json");
+                cardJson = JsonHelper.ReadCardJson("chatCard.json");
             }
 
             // Replace placeholders with dynamic content
@@ -53,29 +55,34 @@ namespace KcbBot.EchoBot.Bots
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            var welcomeText = "Hello and welcome!";
             foreach (var member in membersAdded)
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);
+                    //var welcomeText = "Welcome!";
+                    //await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);
+
+                    var welcomeText = "You are welcome here!";
+                    string cardJson = JsonHelper.ReadCardJson(Metadata.WelcomeCard);
+                    cardJson = cardJson.Replace("{name}", "USER").Replace("{dynamicText}", welcomeText);
+                    var welcomeCard = AdaptiveCard.FromJson(cardJson).Card;
+                    var reply = MessageFactory.Attachment(new Attachment
+                    {
+                        ContentType = AdaptiveCard.ContentType,
+                        Content = welcomeCard
+                    });
+                    await turnContext.SendActivityAsync(reply, cancellationToken);
+
+                    cardJson = JsonHelper.ReadCardJson(Metadata.PlatformSelectionCard);
+                    var platformSelectionCard = AdaptiveCard.FromJson(cardJson).Card;
+                    var nextReply = MessageFactory.Attachment(new Attachment
+                    {
+                        ContentType = AdaptiveCard.ContentType,
+                        Content = platformSelectionCard
+                    });
+                    await turnContext.SendActivityAsync(nextReply, cancellationToken);
                 }
             }
-        }
-
-        private string ReadCardJson(string fileName)
-        {
-            // Construct the full path to the file
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "cards", fileName);
-
-            // Check if the file exists
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"The file '{fileName}' was not found in the 'Resources' directory.");
-            }
-
-            // Read the content of the file and return it as a string
-            return File.ReadAllText(filePath);
         }
     }
 }

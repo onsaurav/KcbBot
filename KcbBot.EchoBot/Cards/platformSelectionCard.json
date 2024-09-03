@@ -1,0 +1,44 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "Large",
+      "weight": "Bolder",
+      "text": "Select Your Preferred Platform"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Choose one of the following options:",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": ".NET",
+      "data": {
+        "action": "platform_selection",
+        "platform": ".NET"
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Node.js",
+      "data": {
+        "action": "platform_selection",
+        "platform": "Node.js"
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Python",
+      "data": {
+        "action": "platform_selection",
+        "platform": "Python"
+      }
+    }
+  ]
+}

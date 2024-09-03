@@ -1,0 +1,98 @@
+﻿{
+  "greetings": [
+    {
+      "text": "Thank you for your help. Please ask me any question?"
+    },
+    {
+      "text": "How can I help you today?"
+    }
+  ],
+  "initialQuestions": [
+    {
+      "question": "What is your favourite sports?",
+      "options": [
+        "Football",
+        "Cricket",
+        "Cabadi",
+        "Other"
+      ]
+    },
+    {
+      "question": "What is your age group?",
+      "options": [
+        "Under 15 years old",
+        "16 - 18 years old",
+        "19 - 23 years old",
+        "Over 24 years old"
+      ]
+    },
+    {
+      "question": "Which State are you located in?",
+      "options": [
+        "Dhaka",
+        "Barishal",
+        "Khulna",
+        "Chitagong",
+        "Shylet",
+        "Rajshahi",
+        "Other"
+      ]
+    }
+  ],
+  "greeting2": [
+    {
+      "text": "How can I help you today?"
+    },
+    {
+      "text": "How may I help you?"
+    }
+  ],
+  "endingSurveyQuestions": [
+    {
+      "question": "What interests you about X?",
+      "options": [
+        {
+          "label": "Option a",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Option b",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Option c",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Option d",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Other",
+          "allowOtherInput": true
+        }
+      ]
+    },
+    {
+      "question": "How did you hear about us?",
+      "options": [
+        {
+          "label": "Family, Friends, and Relatives",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Social Media",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Events",
+          "allowOtherInput": false
+        },
+        {
+          "label": "Other",
+          "allowOtherInput": true
+        }
+      ]
+    }
+  ]
+}

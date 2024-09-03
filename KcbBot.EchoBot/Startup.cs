@@ -1,5 +1,8 @@
 ﻿// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.22.0
 
+using KcbBot.EchoBot.Bots;
+using KcbBot.EchoBot.Dialogs;
+using KcbBot.EchoBot.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -33,9 +36,33 @@ namespace KcbBot.EchoBot
 
             // Create the Bot Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<IStorage, MemoryStorage>();
 
+            services.AddSingleton<ShowTypingMiddleware>();
+
+            // Create the User state. (Used in this bot's Dialog implementation.)
+            services.AddSingleton<UserState>();
+
+            // Create the Conversation state. (Used by the Dialog system itself.)
+            services.AddSingleton<ConversationState>();
+
+            services.AddSingleton<BotService>();
+            services.AddSingleton<ChatLogService>();
+            services.AddSingleton<ExternalApiService>();
+            services.AddSingleton<ConfigService>();
+            services.AddSingleton<SurveyDialog>();
+            services.AddSingleton<ExternalApiDialog>();
+            services.AddSingleton<ShowTypingMiddleware>();
+            services.AddHttpContextAccessor();
+
+            // The MainDialog that will be run by the bot.
+            services.AddSingleton<MainDialog>();
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, Bots.EchoBot>();
+
+            //services.AddTransient<IBot, Bots.EchoBot>();
+            //services.AddTransient<IBot, Bots.KcbBot>();
+            services.AddTransient<IBot, GeneralBot<MainDialog>>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
