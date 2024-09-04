@@ -1,10 +1,10 @@
 ﻿{
   "greetings": [
     {
-      "text": "Thank you for your help. Please ask me any question?"
+      "text": "Thank you, Please ask me any question related with your favourite sports?"
     },
     {
-      "text": "How can I help you today?"
+      "text": "SPORTS! Let us talk about it."
     }
   ],
   "initialQuestions": [
