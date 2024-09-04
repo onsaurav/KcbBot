@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using KcbBot.EchoBot.Services;
 using KcbBot.EchoBot.Model;
 using KcbBot.EchoBot.Model.Data;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 
 namespace KcbBot.EchoBot.Dialogs
@@ -48,16 +49,29 @@ namespace KcbBot.EchoBot.Dialogs
             // Check if there is a textResponse in the context options
             if (stepContext.Options is string textResponse && !string.IsNullOrEmpty(textResponse))
             {
-                if (textResponse.Contains(".jpg") || textResponse.Contains(".gif") || textResponse.Contains(".png") || textResponse.Contains(".mp4"))
+
+                if (textResponse.Contains("image") || textResponse.Contains("video"))
                 {
-                    var urls = ExtractUrls(textResponse);
-                    var card = CreateCompositeImgVidCard(urls);
+                    string url = (textResponse.Contains("image") ? 
+                        @"http://localhost:3978/images/sample/sample.jpg": 
+                        @"http://localhost:3978/images/sample/sample.mp4");
+                    var card = CreateCompositeImgVidCard(new List<string> { url });
 
                     await SendAdaptiveCard(stepContext.Context, card, cancellationToken);
                 }
                 else
                 {
-                    await stepContext.Context.SendActivityAsync(textResponse, cancellationToken: cancellationToken);
+                    if (textResponse.Contains(".jpg") || textResponse.Contains(".gif") || textResponse.Contains(".png") || textResponse.Contains(".mp4"))
+                    {
+                        var urls = ExtractUrls(textResponse);
+                        var card = CreateCompositeImgVidCard(urls);
+
+                        await SendAdaptiveCard(stepContext.Context, card, cancellationToken);
+                    }
+                    else
+                    {
+                        await stepContext.Context.SendActivityAsync(textResponse, cancellationToken: cancellationToken);
+                    }
                 }
                 // Prompt the user again after sending the adaptive card
                 var promptOptions = new PromptOptions
@@ -99,6 +113,10 @@ namespace KcbBot.EchoBot.Dialogs
         private async Task<DialogTurnResult> ProcessUserInputAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userInput = (string)stepContext.Result;
+
+            //this line must be changed
+            return await stepContext.ReplaceDialogAsync(InitialDialogId, userInput, cancellationToken);
+
             if (userInput.Equals("end", StringComparison.OrdinalIgnoreCase))
             {
                 // End the dialog
@@ -141,9 +159,9 @@ namespace KcbBot.EchoBot.Dialogs
             }
         }
 
-        private AdaptiveCard CreateAdaptiveCard(string textResponse)
+        private AdaptiveCard CreateAdaptiveCard(string textResponse, string url = "")
         {
-            var imageUrl = "https://static.vecteezy.com/system/resources/previews/003/005/221/original/api-application-programming-interface-illustration-vector.jpg";
+            var imageUrl = (string.IsNullOrEmpty(url)? "https://static.vecteezy.com/system/resources/previews/003/005/221/original/api-application-programming-interface-illustration-vector.jpg": url);
 
             var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 3))
             {

@@ -10,6 +10,8 @@ using AdaptiveCards;
 using System;
 using KcbBot.EchoBot.Services;
 using KcbBot.EchoBot.Model.Data;
+using KcbBot.EchoBot.Helper;
+using KcbBot.EchoBot.Common;
 
 namespace KcbBot.EchoBot.Bots
 {
@@ -52,7 +54,11 @@ namespace KcbBot.EchoBot.Bots
 
         private AdaptiveCard CreateGreetingCard(GreetingData greetingData)
         {
-            var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 3));
+            string dynamicText = "Test bot developed by IT-Magnet";
+            string cardJson = JsonHelper.ReadCardJson(Metadata.WelcomeCard);
+            cardJson = cardJson.Replace("{name}", "USER").Replace("{dynamicText}", dynamicText);
+            var card = AdaptiveCard.FromJson(cardJson).Card;
+
             if (!string.IsNullOrEmpty(greetingData.ImageUrl))
             {
                 card.Body.Add(new AdaptiveImage
