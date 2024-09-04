@@ -3,6 +3,7 @@
 using KcbBot.EchoBot.Bots;
 using KcbBot.EchoBot.Dialogs;
 using KcbBot.EchoBot.Services;
+using KcbBot.EchoBot.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -46,8 +47,12 @@ namespace KcbBot.EchoBot
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
+
+            services.AddSingleton<IStore, MemoryStore>();
+
             services.AddSingleton<BotService>();
             services.AddSingleton<ChatLogService>();
+            services.AddSingleton<MemoryLogService>();            
             services.AddSingleton<ExternalApiService>();
             services.AddSingleton<ConfigService>();
             services.AddSingleton<SurveyDialog>();

@@ -58,17 +58,7 @@ namespace KcbBot.EchoBot.Bots
             if (!string.IsNullOrEmpty(messageText) && messageText.Equals("#endUserConversation", StringComparison.OrdinalIgnoreCase))
             {
                 var transcriptJson = Newtonsoft.Json.JsonConvert.SerializeObject(userProfile.ChatHistory);
-
-                var chatLog = new ChatLog
-                {
-                    Ip = "32432",
-                    ChatId = userProfile.ConversationId,
-                    Transcript = transcriptJson,
-                    StartDate = userProfile.ChatHistory.First().chatTime,
-                    EndDate = userProfile.ChatHistory.Last().chatTime
-                };
-
-                await ((MainDialog)Dialog).ChatLogService.SaveChatLogAsync(chatLog);
+                await LogReports(userProfile, transcriptJson);
 
                 // Create a summary of the chat log to send back to the user
                 // var chatSummary = userProfile.ChatHistory.Select(chat => $"{chat.Sender} said: {chat.Message}");
@@ -81,6 +71,23 @@ namespace KcbBot.EchoBot.Bots
 
             // Run the Dialog with the new message Activity.
             await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+
+            await LogReports(userProfile);
+        }
+
+        private async Task LogReports(UserProfile userProfile, string transcriptJson = "")
+        {
+            var chatLog = new ChatLog
+            {
+                Ip = "32432",
+                ChatId = userProfile.ConversationId,
+                Transcript = transcriptJson,
+                StartDate = userProfile.ChatHistory.First().chatTime,
+                EndDate = userProfile.ChatHistory.Last().chatTime
+            };
+
+            //await ((MainDialog)Dialog).ChatLogService.SaveChatLogAsync(chatLog);
+            await ((MainDialog)Dialog).MemoryLogService.SaveChatLogAsync(userProfile.ConversationId, chatLog);
         }
     }
 }

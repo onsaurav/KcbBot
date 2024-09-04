@@ -22,8 +22,9 @@ namespace KcbBot.EchoBot.Dialogs
         private readonly UserState _userState;
         private readonly IStatePropertyAccessor<UserProfile> _userProfileAccessor;
         private readonly ChatLogService _chatLogService;
+        private readonly MemoryLogService _memoryLogService;
 
-        public MainDialog(BotService botService, ExternalApiService externalApiService, ConfigService configService, ChatLogService chatLogService, UserState userState)
+        public MainDialog(BotService botService, ExternalApiService externalApiService, ConfigService configService, ChatLogService chatLogService, UserState userState, MemoryLogService memoryLogService)
             : base(nameof(MainDialog))
         {
             _botService = botService;
@@ -32,6 +33,7 @@ namespace KcbBot.EchoBot.Dialogs
             _userState = userState;
             _chatLogService = chatLogService;
             _userProfileAccessor = _userState.CreateProperty<UserProfile>("UserProfile");
+            _memoryLogService = memoryLogService;
 
             var waterfallSteps = new WaterfallStep[]
             {
@@ -49,9 +51,11 @@ namespace KcbBot.EchoBot.Dialogs
             AddDialog(new InitialQuestionsDialog(_configService, _userState));
 
             InitialDialogId = nameof(WaterfallDialog);
+            _memoryLogService = memoryLogService;
         }
 
         public ChatLogService ChatLogService => _chatLogService;
+        public MemoryLogService MemoryLogService => _memoryLogService;
 
         public async Task<UserProfile> GetUserProfileAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -93,7 +97,8 @@ namespace KcbBot.EchoBot.Dialogs
             };
 
             // Save chat log
-            await _chatLogService.SaveChatLogAsync(chatLog);
+            //await _chatLogService.SaveChatLogAsync(chatLog);
+            await _memoryLogService.SaveChatLogAsync(userProfile.ConversationId, chatLog);
 
             // Mark the conversation as complete
             userProfile.ConversationComplete = true;
