@@ -4,10 +4,10 @@ using Microsoft.Bot.Schema;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using System.Net.Http;
 using AdaptiveCards;
 using KcbBot.EchoBot.Helper;
 using KcbBot.EchoBot.Common;
+using System.Net.Http;
 
 namespace KcbBot.EchoBot.Dialogs
 {
@@ -32,16 +32,16 @@ namespace KcbBot.EchoBot.Dialogs
             var reply = MessageFactory.Text("Please choose an option:");
             var buttons = new[]
             {
-            new CardAction(ActionTypes.ImBack, "Link", value: "link"),
-            new CardAction(ActionTypes.ImBack, "Search", value: "search")
-        };
+                new CardAction(ActionTypes.ImBack, "Link", value: "link"),
+                new CardAction(ActionTypes.ImBack, "Search", value: "search")
+            };
             var replyWithButtons = MessageFactory.Carousel(new[]
             {
-            new HeroCard
-            {
-                Buttons = buttons
-            }.ToAttachment()
-        });
+                new HeroCard
+                {
+                    Buttons = buttons
+                }.ToAttachment()
+            });
 
             await stepContext.Context.SendActivityAsync(replyWithButtons, cancellationToken);
             return Dialog.EndOfTurn;
@@ -53,38 +53,36 @@ namespace KcbBot.EchoBot.Dialogs
 
             if (option.Equals("link", StringComparison.OrdinalIgnoreCase))
             {
-
                 var linkTest = @"https://www.prothomalo.com";
                 string cardJson = JsonHelper.ReadCardJson(Metadata.LinkCard);
                 cardJson = cardJson.Replace("{linkUrl}", linkTest);
-                var welcomeCard = AdaptiveCard.FromJson(cardJson).Card;
-                
+                var linkCard = AdaptiveCard.FromJson(cardJson).Card;
+
                 await stepContext.Context.SendActivityAsync(MessageFactory.Attachment(new Attachment
                 {
                     ContentType = AdaptiveCard.ContentType,
-                    Content = welcomeCard
+                    Content = linkCard
                 }), cancellationToken);
             }
             else if (option.Equals("search", StringComparison.OrdinalIgnoreCase))
             {
                 // Prompt the user for search text
-                return await stepContext.BeginDialogAsync(nameof(TextPrompt), null, cancellationToken);
+                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please enter your search text:"), }, cancellationToken);
             }
-            else if (option is string searchText && !string.IsNullOrEmpty(searchText))
+            else
             {
-                // Call the API for search results
-                var searchResult = await CallSearchApi(searchText);
+                // Handle the search result
+                var searchText = option;
+                var searchResult = ""; // await CallSearchApi(searchText);
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Search results: {searchResult}"), cancellationToken);
             }
 
-            return await stepContext.EndDialogAsync();
+            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
         private async Task<string> CallSearchApi(string searchText)
         {
             var searchUrl = $"https://seartecxt/{searchText}";
-            // Implement your HTTP request logic here
-            // For example, using HttpClient to call the API:
             using var httpClient = new HttpClient();
             var response = await httpClient.GetStringAsync(searchUrl);
             return response;

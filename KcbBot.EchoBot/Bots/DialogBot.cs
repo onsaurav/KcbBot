@@ -52,13 +52,9 @@ namespace KcbBot.EchoBot.Bots
                     var dc = await CreateDialogContextAsync(turnContext, cancellationToken);
                     var result = await dc.ContinueDialogAsync(cancellationToken);
 
-                    if (!turnContext.Responded)
+                    if (result.Status == DialogTurnStatus.Empty || result.Status == DialogTurnStatus.Complete)
                     {
-                        // Start the LinkSearchDialog if it's not already running
-                        if (result.Status == DialogTurnStatus.Empty)
-                        {
-                            await dc.BeginDialogAsync(nameof(LinkSearchDialog), null, cancellationToken);
-                        }
+                        await dc.BeginDialogAsync(nameof(LinkSearchDialog), null, cancellationToken);
                     }
                     return;
                 }
