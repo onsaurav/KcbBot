@@ -18,6 +18,7 @@ namespace KcbBot.EchoBot.Bots
         protected readonly BotState ConversationState;
         protected readonly BotState UserState;
         protected readonly ILogger Logger;
+        public LinkSearchDialog _linkSearchDialog = new LinkSearchDialog();
 #pragma warning restore SA1401 // Fields should be private
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog, ILogger<DialogBot<T>> logger)
@@ -42,6 +43,26 @@ namespace KcbBot.EchoBot.Bots
             Logger.LogInformation("Running dialog with Message Activity.");
 
             var messageText = turnContext.Activity.Text?.Trim();
+
+            if (!string.IsNullOrEmpty(messageText))
+            {
+                if (messageText.ToLower().Equals("options", StringComparison.OrdinalIgnoreCase))
+                {
+
+                    var dc = await CreateDialogContextAsync(turnContext, cancellationToken);
+                    var result = await dc.ContinueDialogAsync(cancellationToken);
+
+                    if (!turnContext.Responded)
+                    {
+                        // Start the LinkSearchDialog if it's not already running
+                        if (result.Status == DialogTurnStatus.Empty)
+                        {
+                            await dc.BeginDialogAsync(nameof(LinkSearchDialog), null, cancellationToken);
+                        }
+                    }
+                    return;
+                }
+            }
 
             // Retrieve the user profile
             var userProfile = await ((MainDialog)Dialog).GetUserProfileAsync(turnContext, cancellationToken);
@@ -73,6 +94,14 @@ namespace KcbBot.EchoBot.Bots
             await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
 
             await LogReports(userProfile);
+        }
+
+        private async Task<DialogContext> CreateDialogContextAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var dialogs = new DialogSet(UserState.CreateProperty<DialogState>("DialogState"));
+            dialogs.Add(Dialog);
+            dialogs.Add(_linkSearchDialog);
+            return await dialogs.CreateContextAsync(turnContext, cancellationToken);
         }
 
         private async Task LogReports(UserProfile userProfile, string transcriptJson = "")

@@ -49,6 +49,7 @@ namespace KcbBot.EchoBot.Dialogs
             AddDialog(new ExternalApiDialog(_botService, _externalApiService, _userState));
             AddDialog(new SurveyDialog(_configService, _userState));
             AddDialog(new InitialQuestionsDialog(_configService, _userState));
+            AddDialog(new LinkSearchDialog());
 
             InitialDialogId = nameof(WaterfallDialog);
             _memoryLogService = memoryLogService;
