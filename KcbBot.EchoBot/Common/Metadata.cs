@@ -9,5 +9,6 @@ namespace KcbBot.EchoBot.Common
         public const string FarewellCard = "farewellCard.json";
         public const string ChatCard = "chatCard.json";
         public const string PlatformSelectionCard = "platformSelectionCard.json";
+        public const string LinkCard = "linkCard.json";
     }
 }

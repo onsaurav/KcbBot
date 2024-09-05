@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using System.Net.Http;
+using AdaptiveCards;
+using KcbBot.EchoBot.Helper;
+using KcbBot.EchoBot.Common;
 
 namespace KcbBot.EchoBot.Dialogs
 {
@@ -50,7 +53,17 @@ namespace KcbBot.EchoBot.Dialogs
 
             if (option.Equals("link", StringComparison.OrdinalIgnoreCase))
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Here is the link: https://prothom-alo.com"), cancellationToken);
+
+                var linkTest = @"https://www.prothomalo.com";
+                string cardJson = JsonHelper.ReadCardJson(Metadata.LinkCard);
+                cardJson = cardJson.Replace("{linkUrl}", linkTest);
+                var welcomeCard = AdaptiveCard.FromJson(cardJson).Card;
+                
+                await stepContext.Context.SendActivityAsync(MessageFactory.Attachment(new Attachment
+                {
+                    ContentType = AdaptiveCard.ContentType,
+                    Content = welcomeCard
+                }), cancellationToken);
             }
             else if (option.Equals("search", StringComparison.OrdinalIgnoreCase))
             {

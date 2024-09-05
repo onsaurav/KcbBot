@@ -1,0 +1,53 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "Image",
+              "url": "http://localhost:3978/images/speech.png",
+              "size": "small",
+              "altText": "Icon description"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Welcome!",
+              "weight": "bolder",
+              "size": "large"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Click the button below to open a link:",
+      "wrap": true,
+      "size": "medium",
+      "weight": "bolder"
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.OpenUrl",
+          "title": "Open Link",
+          "url": "{linkUrl}"
+        }
+      ]
+    }
+  ]
+}
